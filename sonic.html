@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Árbol VP - Recomendación de Canciones</title>
+<style>
+    body {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        background-color: #1DB954;
+        color: #ffffff;
+        padding: 20px;
+        margin: 0;
+    }
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #121212;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    h1, h2 {
+        text-align: center;
+        color: #ffffff;
+    }
+    select {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        margin-bottom: 20px;
+        background-color: #1DB954;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+    }
+    select option {
+        background-color: #121212;
+        color: #ffffff;
+    }
+    .recommendations {
+        margin-top: 20px;
+        background-color: #121212;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .recommendations h2 {
+        color: #ffffff;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    .recommendations p {
+        color: #1DB954;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Recomendación de Canciones</h1>
+    <label for="selectSong">Selecciona una canción:</label>
+    <select id="selectSong">
+        <option value="">-- Selecciona una canción --</option>
+        <option value="La Bamba">Ritchie Valens - La Bamba, 1958</option>
+        <option value="Black Magic Woman">Santana - Black Magic Woman, 1970</option>
+        <option value="Muchacha (Ojos de papel)">Luis Alberto Spinetta - Muchacha (Ojos de papel), 1969</option>
+        <option value="Ni tú ni nadie">Alaska y Dinarama - Ni tú ni nadie, 1985</option>
+        <option value="Cuando pase el temblor">Soda Stereo - Cuando pase el temblor, 1985</option>
+        <option value="Matador">Los Fabulosos Cadillacs - Matador, 1994</option>
+        <!-- Nuevas canciones -->
+        <option value="Tren al sur">Los Prisioneros - Tren al sur, 1990</option>
+        <option value="Maldito duende">Heroes del Silencio - Maldito duende, 1990</option>
+        <option value="Oye mi amor">Maná - Oye mi amor, 1992</option>
+        <option value="Lamento boliviano">Enanitos Verdes - Lamento boliviano, 1994</option>
+        <option value="La ingrata">Cafe Tacvba - La ingrata, 1994</option>
+        <option value="Florecita rockera">Aterciopelados - Florecita rockera, 1995</option>
+        <option value="El Duelo">La Ley ft. Ely Guerra - El Duelo</option>
+        <option value="Los globos del cielo">Pedro Suárez Vertiz - Los globos del cielo, 1996</option>
+        <option value="Puto">Molotov - Puto, 1997</option>
+        <option value="Inevitable">Shakira - Inevitable, 1998</option>
+        <option value="A Dios le pido">Juanes - A Dios le pido, 2002</option>
+        <option value="Más y más">Robi Draco Rosa - Más y más, 2004</option>
+        <option value="Mentiras">Los Amigos Invisibles - Mentiras, 2009</option>
+        <option value="Brillas">León Larregui - Brillas, 2012</option>
+        <option value="Hasta la raíz">Natalia Lafourcade - Hasta la raíz, 2015</option>
+        <option value="Boca Llena">Y La Bamba - Boca Llena, 2019</option>
+        <option value="Soy así">Alejandra Guzman - Soy así, 2018</option>
+        <option value="Biutiful">Mon Laferte - Biutiful, 2020</option>
+        <option value="Karmadame">Zoé - Karmadame, 2020</option>
+    </select>
+
+    <div class="recommendations" id="recommendations">
+        <!-- Aquí se mostrarán las recomendaciones -->
+    </div>
+</div>
+
+<script>
+// Definición de las canciones con características [tempo, pitch, duración]
+const songs = [
+    { title: "La Bamba", year: 1958, features: [120, 4.5, 180] },
+    { title: "Black Magic Woman", year: 1970, features: [110, 3.7, 240] },
+    { title: "Muchacha (Ojos de papel)", year: 1969, features: [90, 4.2, 210] },
+    { title: "Ni tú ni nadie", year: 1985, features: [130, 4.0, 200] },
+    { title: "Cuando pase el temblor", year: 1985, features: [140, 3.8, 190] },
+    { title: "Matador", year: 1994, features: [100, 4.1, 220] },
+    { title: "Tren al sur", year: 1990, features: [115, 4.3, 210] },
+    { title: "Maldito duende", year: 1990, features: [125, 4.4, 200] },
+    { title: "Oye mi amor", year: 1992, features: [120, 4.2, 215] },
+    { title: "Lamento boliviano", year: 1994, features: [105, 3.9, 230] },
+    { title: "La ingrata", year: 1994, features: [120, 4.0, 205] },
+    { title: "Florecita rockera", year: 1995, features: [95, 4.1, 220] },
+    { title: "El Duelo", year: 1996, features: [100, 4.3, 210] },
+    { title: "Los globos del cielo", year: 1996, features: [85, 4.5, 190] },
+    { title: "Puto", year: 1997, features: [130, 3.8, 240] },
+    { title: "Inevitable", year: 1998, features: [125, 4.2, 215] },
+    { title: "A Dios le pido", year: 2002, features: [135, 4.0, 200] },
+    { title: "Más y más", year: 2004, features: [95, 4.1, 225] },
+    { title: "Mentiras", year: 2009, features: [110, 4.2, 210] },
+    { title: "Brillas", year: 2012, features: [120, 4.3, 205] },
+    { title: "Hasta la raíz", year: 2015, features: [100, 4.4, 195] },
+    { title: "Boca Llena", year: 2019, features: [110, 4.5, 185] },
+    { title: "Soy así", year: 2018, features: [105, 4.1, 220] },
+    { title: "Biutiful", year: 2020, features: [115, 4.2, 215] },
+    { title: "Karmadame", year: 2020, features: [125, 4.3, 210] }
+];
+
+// Función para calcular la distancia euclidiana entre dos canciones
+function euclideanDistance(song1, song2) {
+    let sum = 0;
+    for (let i = 0; i < song1.features.length; i++) {
+        sum += Math.pow(song1.features[i] - song2.features[i], 2);
+    }
+    return Math.sqrt(sum);
+}
+
+// Clase Node para representar los nodos del Árbol VP
+class Node {
+    constructor(song) {
+        this.song = song;
+        this.left = null;
+        this.right = null;
+        this.threshold = null;
+    }
+}
+
+// Clase VPTree para construir y manejar el Árbol VP
+class VPTree {
+    constructor(songs) {
+        if (songs.length === 0) {
+            this.root = null;
+        } else {
+            this.root = this.buildVPTree(songs);
+        }
+    }
+
+    buildVPTree(songs) {
+        if (songs.length === 0) return null;
+
+        // Seleccionar un vantage point aleatorio
+        const vpIndex = Math.floor(Math.random() * songs.length);
+        const vpSong = songs[vpIndex];
+        const node = new Node(vpSong);
+
+        // Separar canciones en dos conjuntos
+        let leftSet = [];
+        let rightSet = [];
+        for (let i = 0; i < songs.length; i++) {
+            if (i !== vpIndex) {
+                const dist = euclideanDistance(vpSong, songs[i]);
+                if (leftSet.length < rightSet.length) {
+                    leftSet.push({ song: songs[i], dist: dist });
+                } else {
+                    rightSet.push({ song: songs[i], dist: dist });
+                }
+            }
+        }
+
+        // Construir sub-árboles recursivamente
+        node.threshold = rightSet.length > 0 ? rightSet[0].dist : 0;
+        node.left = this.buildVPTree(leftSet.map(obj => obj.song));
+        node.right = this.buildVPTree(rightSet.map(obj => obj.song));
+
+        return node;
+    }
+
+    // Función para buscar canciones similares
+    findSimilarSongs(querySong, k) {
+        let results = [];
+        this.search(this.root, querySong, k, results);
+        return results;
+    }
+
+    search(node, querySong, k, results) {
+        if (node === null) return;
+
+        const dist = euclideanDistance(node.song, querySong);
+
+        if (dist < node.threshold) {
+            if (results.length < k) {
+                results.push(node.song);
+            } else {
+                const maxDistIndex = results.reduce((maxIndex, song, index) =>
+                    euclideanDistance(song, querySong) > euclideanDistance(results[maxIndex], querySong) ? index : maxIndex, 0);
+                results[maxDistIndex] = node.song;
+            }
+            if (results.length < k || dist < results.reduce((maxDist, song) => Math.max(maxDist, euclideanDistance(song, querySong)), 0)) {
+                this.search(node.left, querySong, k, results);
+            }
+        } else {
+            if (results.length < k || dist < results.reduce((maxDist, song) => Math.max(maxDist, euclideanDistance(song, querySong)), 0)) {
+                this.search(node.right, querySong, k, results);
+            }
+        }
+    }
+}
+
+// Manejar evento de cambio en el select
+const selectSong = document.getElementById('selectSong');
+selectSong.addEventListener('change', function() {
+    const selectedSongTitle = this.value;
+    const selectedSong = songs.find(song => song.title === selectedSongTitle);
+
+    if (selectedSong) {
+        // Filtrar las canciones excluyendo la seleccionada
+        const otherSongs = songs.filter(song => song.title !== selectedSong.title);
+        // Crear un nuevo Árbol VP con las canciones restantes
+        const vpTree = new VPTree(otherSongs);
+
+        const k = 2; // número de canciones más similares que se desean encontrar
+        const similarSongs = vpTree.findSimilarSongs(selectedSong, k);
+
+        // Mostrar las recomendaciones
+        const recommendationsDiv = document.getElementById('recommendations');
+        recommendationsDiv.innerHTML = `<h2>Canciones similares a "${selectedSong.title}":</h2>`;
+        similarSongs.forEach(song => {
+            recommendationsDiv.innerHTML += `<p>${song.title} - ${song.year}</p>`;
+        });
+    } else {
+        // Si no se selecciona ninguna canción
+        const recommendationsDiv = document.getElementById('recommendations');
+        recommendationsDiv.innerHTML = '';
+    }
+});
+</script>
+</body>
+</html>
